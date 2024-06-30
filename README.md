@@ -1,4 +1,4 @@
-# idol-desktop
+# Desktop-Inspired Personal Website
 
 ## Project setup
 ```
