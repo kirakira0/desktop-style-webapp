@@ -20,6 +20,7 @@
   <script>
   import PhotoGallery from './PhotoGallery.vue';
   import LinkWindow from './LinkWindow.vue';
+  import YouTubeWindow from './YouTubeWindow.vue';
   
   export default {
     props: {
@@ -43,7 +44,9 @@
           return PhotoGallery;
         } else if (this.app.name === 'Link Parfait') {
           return LinkWindow;
-        } 
+        } else if (this.app.name == 'YouTube') {
+            return YouTubeWindow;
+        }
         else {
           return {
             template: `<div>{{ app.name }} is open!</div>`,
@@ -104,7 +107,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 5px;
-    background-color: rgb(255, 195, 228);;
+    background-color: rgb(255, 195, 228);
     cursor: move;
   }
   
