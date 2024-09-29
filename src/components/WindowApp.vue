@@ -1,11 +1,11 @@
 <template>
   <div class="window" :style="{ top: positionY + 'px', left: positionX + 'px' }" @mousedown="focusWindow">
     <div class="title-bar" @mousedown="startDrag">
-      <span>{{ app.name }}</span>
+      <span class="title">{{ app.name }}</span> <!-- Add a class for title styling -->
       <button class="close-button" @click="closeWindow">X</button>
     </div>
     <div class="content">
-      <p>This is {{ app.name }}!</p>
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -44,10 +44,10 @@ export default {
         let newPositionY = event.clientY - this.initialY;
 
         // Constrain to screen boundaries
-        if (newPositionX < 0) newPositionX = 0;  // Left boundary
-        if (newPositionY < 0) newPositionY = 0;  // Top boundary
-        if (newPositionX + windowWidth > viewportWidth) newPositionX = viewportWidth - windowWidth;  // Right boundary
-        if (newPositionY + windowHeight > viewportHeight) newPositionY = viewportHeight - windowHeight;  // Bottom boundary
+        if (newPositionX < 0) newPositionX = 0;
+        if (newPositionY < 0) newPositionY = 0;
+        if (newPositionX + windowWidth > viewportWidth) newPositionX = viewportWidth - windowWidth;
+        if (newPositionY + windowHeight > viewportHeight) newPositionY = viewportHeight - windowHeight;
 
         this.positionX = newPositionX;
         this.positionY = newPositionY;
@@ -59,7 +59,7 @@ export default {
       document.removeEventListener('mouseup', this.stopDrag);
     },
     focusWindow() {
-      this.$emit('focus-app', this.app);  // To potentially bring window to front
+      this.$emit('focus-app', this.app);
     },
   },
 };
@@ -67,14 +67,15 @@ export default {
 
 <style scoped>
 .window {
-  width: 300px;
-  height: 200px;
+  width: 400px;  /* Adjust width as needed */
+  height: 300px; /* Adjust height as needed */
   background-color: #fff;
   border: 1px solid #ccc;
   position: absolute;
-  z-index: 100; /* Adjust this as needed for layering */
+  z-index: 100;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
+  overflow: hidden; /* Ensure overflow is hidden */
 }
 
 .title-bar {
@@ -82,16 +83,21 @@ export default {
   color: white;
   padding: 5px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   cursor: move;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
 
+.title {
+  flex-grow: 1; /* Allow the title to take up available space */
+  text-align: center; /* Center the title */
+}
+
 .close-button {
   background: none;
-  border: none;
+  border: 1px solid white;
+  border-radius: 3px;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -99,6 +105,8 @@ export default {
 }
 
 .content {
+  max-height: calc(100% - 30px); /* Adjust for title bar height */
+  overflow-y: auto; /* Enable vertical scrolling */
   padding: 10px;
 }
 </style>
