@@ -1,17 +1,23 @@
 <template>
     <div class="taskbar">
       <div v-for="icon in icons" :key="icon.id" class="icon" @click="openApp(icon)">
-        <span class="material-icons icon-symbol">{{ icon.icon }}</span> <!-- Use Material Icons -->
+        <span class="material-icons icon-symbol">{{ icon.icon }}</span>
+        <!-- Conditionally render the dot if the app is open -->
+        <div v-if="isAppOpen(icon)" class="open-dot"></div>
       </div>
     </div>
   </template>
   
   <script>
   export default {
-    props: ['icons'],
+    props: ['icons', 'openedApps'],
     methods: {
       openApp(icon) {
         this.$emit('open-app', icon);
+      },
+      isAppOpen(icon) {
+        // Check if the app is in the openedApps array
+        return this.openedApps.some(app => app.id === icon.id);
       },
     },
   };
@@ -34,6 +40,7 @@
   }
   
   .icon {
+    position: relative; /* So the dot can be positioned absolutely */
     width: 40px;  /* Width of the icon square */
     height: 40px;  /* Height of the icon square */
     background-color: white;  /* Background color of the icon */
@@ -49,6 +56,16 @@
   
   .icon-symbol {
     line-height: 40px;  /* Center the icon vertically */
+  }
+  
+  .open-dot {
+    position: absolute;
+    top: -4px;  /* Shift the dot upwards slightly */
+    right: -4px;  /* Shift the dot to the right slightly */
+    width: 14px;  /* Increase the size of the dot */
+    height: 14px; /* Increase the size of the dot */
+    background-color: #00c3ff;  /* Updated dot color */
+    border-radius: 50%;
   }
   </style>
   

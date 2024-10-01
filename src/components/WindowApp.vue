@@ -1,7 +1,11 @@
 <template>
-  <div class="window" :style="{ top: positionY + 'px', left: positionX + 'px' }" @mousedown="focusWindow">
-    <div class="title-bar" @mousedown="startDrag">
-      <span class="title">{{ app.name }}</span> <!-- Add a class for title styling -->
+  <div
+    class="window"
+    :style="{ top: currentPositionY + 'px', left: currentPositionX + 'px', zIndex: zIndex }"
+    @mousedown="focusWindow"
+  >
+    <div class="title-bar" @mousedown.stop="focusWindow" @mousedown="startDrag">
+      <span class="title">{{ app.name }}</span>
       <button class="close-button" @click="closeWindow">X</button>
     </div>
     <div class="content">
@@ -12,14 +16,14 @@
 
 <script>
 export default {
-  props: ['app'],
+  props: ['app', 'positionX', 'positionY', 'zIndex'],
   data() {
     return {
       isDragging: false,
       initialX: 0,
       initialY: 0,
-      positionX: 100,  // Starting X position
-      positionY: 100,  // Starting Y position
+      currentPositionX: this.positionX || 100,
+      currentPositionY: this.positionY || 100,
     };
   },
   methods: {
@@ -28,8 +32,8 @@ export default {
     },
     startDrag(event) {
       this.isDragging = true;
-      this.initialX = event.clientX - this.positionX;
-      this.initialY = event.clientY - this.positionY;
+      this.initialX = event.clientX - this.currentPositionX;
+      this.initialY = event.clientY - this.currentPositionY;
       document.addEventListener('mousemove', this.drag);
       document.addEventListener('mouseup', this.stopDrag);
     },
@@ -43,14 +47,13 @@ export default {
         let newPositionX = event.clientX - this.initialX;
         let newPositionY = event.clientY - this.initialY;
 
-        // Constrain to screen boundaries
         if (newPositionX < 0) newPositionX = 0;
         if (newPositionY < 0) newPositionY = 0;
         if (newPositionX + windowWidth > viewportWidth) newPositionX = viewportWidth - windowWidth;
         if (newPositionY + windowHeight > viewportHeight) newPositionY = viewportHeight - windowHeight;
 
-        this.positionX = newPositionX;
-        this.positionY = newPositionY;
+        this.currentPositionX = newPositionX;
+        this.currentPositionY = newPositionY;
       }
     },
     stopDrag() {
@@ -67,34 +70,44 @@ export default {
 
 <style scoped>
 .window {
-  width: 400px;  /* Adjust width as needed */
-  height: 300px; /* Adjust height as needed */
+  width: 400px;
+  height: 300px;
   background-color: #fff;
   border: 1px solid #ccc;
   position: absolute;
-  z-index: 100;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
-  overflow: hidden; /* Ensure overflow is hidden */
+  overflow: hidden;
 }
 
 .title-bar {
-  background-color: #FFC3E4;  /* Updated header color */
+  background-color: #FFC3E4;
   color: white;
-  padding: 5px;
+  padding: 10px;
   display: flex;
   align-items: center;
+  position: relative;
   cursor: move;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  height: 30px;
+  user-select: none;
 }
 
 .title {
-  flex-grow: 1; /* Allow the title to take up available space */
-  text-align: center; /* Center the title */
+  flex-grow: 1;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  user-select: none;
 }
 
 .close-button {
+  position: absolute;
+  right: 10px;
   background: none;
   border: 1px solid white;
   border-radius: 3px;
@@ -102,11 +115,12 @@ export default {
   font-weight: bold;
   cursor: pointer;
   padding: 2px 8px;
+  user-select: none;
 }
 
 .content {
-  max-height: calc(100% - 30px); /* Adjust for title bar height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: calc(100% - 40px);
+  overflow-y: auto;
   padding: 10px;
 }
 </style>
